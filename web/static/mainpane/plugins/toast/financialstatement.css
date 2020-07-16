@@ -1,0 +1,17 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : Dec 1, 2017, 11:01:26 AM
+    Author     : iics
+*/
+
+.academicyear{
+    background: #c1c1bc;
+    margin-top: 0px;
+    margin-right: 30px;
+    border-radius: 10px;
+    padding: 7px;
+}

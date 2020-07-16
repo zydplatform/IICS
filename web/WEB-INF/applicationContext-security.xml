@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"      
+       xmlns:security="http://www.springframework.org/schema/security"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.3.xsd
+		   http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-4.2.xsd">
+
+    <security:http auto-config="true" use-expressions="true">
+        <security:intercept-url pattern="/IICS**" access="ROLE_USER" />
+        <security:intercept-url pattern="/j_spring_security_logout" access="permitAll" />
+        <security:intercept-url pattern="/stompchat**" access="permitAll" />
+        
+<!--       <security:form-login
+            login-processing-url="/j_spring_security_check" 
+            username-parameter = "j_username"
+            password-parameter = "j_password"
+            login-page="/index.htm"
+            default-target-url="/index.htm"
+            authentication-failure-url="/?error=true"
+        />-->
+        
+        <security:form-login
+            login-processing-url="/j_spring_security_check" 
+            username-parameter = "j_username"
+            password-parameter = "j_password"
+            login-page="/index.htm"
+            default-target-url="/index.htm"
+            authentication-failure-url="/loginerror.html"
+        />
+        
+        <security:custom-filter ref="concurrencyFilter" position="CONCURRENT_SESSION_FILTER"/>
+        <security:session-management invalid-session-url="/index.htm"/>
+        <security:csrf disabled="true"/>
+        <security:logout
+            logout-url="/j_spring_security_logout"
+            logout-success-url="/index.htm"
+        />
+        <security:session-management session-authentication-strategy-ref="sas"/>
+    </security:http>
+    <security:authentication-manager>
+        <security:authentication-provider user-service-ref="userLoginService">
+            <security:password-encoder ref="passwordEncoder"/>
+        </security:authentication-provider>
+    </security:authentication-manager>
+
+    <!-- Use a Md5 encoder since the user's passwords are stored as Md5 in the database -->
+    <bean class="org.springframework.security.authentication.encoding.Md5PasswordEncoder" id="passwordEncoder"/>
+
+    <!-- A custom service where Spring will retrieve users and their corresponding access levels  -->
+    <bean id="userLoginService" class="com.iics.service.UserLoginService"/>
+
+    <!--<bean id="concurrencyFilter" class="org.springframework.security.web.session.ConcurrentSessionFilter"
+    p:sessionRegistry-ref="sessionRegistry"
+    p:expiredUrl="/login.htm" />-->
+    <bean id="concurrencyFilter" class="org.springframework.security.web.session.ConcurrentSessionFilter"> 
+        <constructor-arg name="sessionRegistry" ref="sessionRegistry" /> 
+        <constructor-arg value="/login.htm"  />
+    </bean>
+
+    <!--
+    <bean id="sas" class="org.springframework.security.web.authentication.session.ConcurrentSessionControlStrategy"
+          p:maximumSessions="5" p:exceptionIfMaximumExceeded="true" >
+        <constructor-arg name="sessionRegistry" ref="sessionRegistry" />
+    </bean>
+    <bean id="sas" class="org.springframework.security.web.authentication.session.CompositeSessionAuthenticationStrategy">
+        <constructor-arg>
+            <list>
+                <bean class="org.springframework.security.web.authentication.session.ConcurrentSessionControlAuthenticationStrategy">
+                    <constructor-arg ref="sessionRegistry"/>
+                    <property name="maximumSessions" value="1" />
+                </bean>
+                <bean class="org.springframework.security.web.authentication.session.RegisterSessionAuthenticationStrategy">
+                    <constructor-arg ref="sessionRegistry"/>
+                </bean>
+            </list>
+        </constructor-arg>
+    </bean>
+    -->
+    <bean id="sas" class="org.springframework.security.web.authentication.session.CompositeSessionAuthenticationStrategy">
+        <constructor-arg>
+            <list>
+                <bean class="org.springframework.security.web.authentication.session.ConcurrentSessionControlAuthenticationStrategy">
+                    <constructor-arg name="sessionRegistry"  ref="sessionRegistry"/>
+                    <property name="maximumSessions" value="1"/>
+                    <property name="exceptionIfMaximumExceeded" value="true" />
+                </bean>
+                <bean class="org.springframework.security.web.authentication.session.SessionFixationProtectionStrategy"/>
+                <bean class="org.springframework.security.web.authentication.session.RegisterSessionAuthenticationStrategy">
+                    <constructor-arg name="sessionRegistry" ref="sessionRegistry"/>
+                </bean>
+            </list>
+        </constructor-arg>
+    </bean>
+
+    <bean id="sessionRegistry" class="org.springframework.security.core.session.SessionRegistryImpl"/>
+
+</beans>

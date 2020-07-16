@@ -1,0 +1,60 @@
+-- Table: public.facilityunithierachy
+
+-- DROP TABLE public.facilityunithierachy;
+
+CREATE TABLE public.facilityunithierachy
+(
+    facilityunitid bigint NOT NULL,
+    facilityid integer,
+    facilityunitname text COLLATE pg_catalog."default" NOT NULL,
+    description text COLLATE pg_catalog."default",
+    shortname character varying(25) COLLATE pg_catalog."default",
+    mainfacilityunit bigint NOT NULL DEFAULT 0,
+    subunits integer NOT NULL DEFAULT 0,
+    location character varying(255) COLLATE pg_catalog."default",
+    telephone character varying(255) COLLATE pg_catalog."default",
+    active boolean DEFAULT true,
+    structureid bigint,
+    parentid bigint,
+    dateupdated timestamp without time zone,
+    updatedby bigint,
+    addedby bigint,
+    dateadded timestamp without time zone,
+    service boolean,
+    CONSTRAINT facilityunithierachyid PRIMARY KEY (facilityunitid),
+    CONSTRAINT "FK_RefAddedByPerson" FOREIGN KEY (addedby)
+        REFERENCES public.person (personid) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION,
+    CONSTRAINT "FK_RefStructure" FOREIGN KEY (structureid)
+        REFERENCES public.facilitystructure (structureid) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION,
+    CONSTRAINT "FK_RefUpdatedByPerson" FOREIGN KEY (updatedby)
+        REFERENCES public.person (personid) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION,
+    CONSTRAINT "FK_Ref_Facilityunithierarchy" FOREIGN KEY (parentid)
+        REFERENCES public.facilityunithierachy (facilityunitid) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION,
+    CONSTRAINT fk_37je3g57kp2tmfi3lncdcl0wk FOREIGN KEY (parentid)
+        REFERENCES public.facilityunithierachy (facilityunitid) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION,
+    CONSTRAINT fk_ref_unitfacility FOREIGN KEY (facilityid)
+        REFERENCES public.facility (facilityid) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION,
+    CONSTRAINT unitfacilityid FOREIGN KEY (facilityid)
+        REFERENCES public.facility (facilityid) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+)
+WITH (
+    OIDS = FALSE
+)
+TABLESPACE pg_default;
+
+ALTER TABLE public.facilityunithierachy
+    OWNER to postgres;

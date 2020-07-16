@@ -1,0 +1,15 @@
+CREATE SCHEMA controlpanel;
+ALTER TABLE public.systemmodule
+    SET SCHEMA controlpanel;
+ALTER TABLE public.systemroleprivilege
+    SET SCHEMA controlpanel;
+ALTER TABLE public.notification_receipient
+    SET SCHEMA controlpanel;
+ALTER TABLE public.privilege
+    SET SCHEMA controlpanel;
+ALTER TABLE public.systemroleprivilagefacility
+    SET SCHEMA controlpanel;
+ALTER TABLE public.stafffacilityunit
+    SET SCHEMA controlpanel;
+ALTER TABLE public.stafffacilityunitroleprivilege
+    SET SCHEMA controlpanel;
